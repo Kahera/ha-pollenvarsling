@@ -8,11 +8,12 @@ from homeassistant.helpers.typing import ConfigType
 
 _LOGGER: logging.Logger = logging.getLogger(__name__)
 
-DOMAIN: Final = "pollen_naaf"
+DOMAIN: Final = "pollenvarsel_naaf_yr"
 CONF_LOCATIONS: Final = "locations"
 CONF_LOCATION_ID: Final = "location_id"
-CONF_LOCATION_NAME: Final = "name"
+CONF_LOCATION_NAME: Final = "location_name"
 CONF_POLLEN_TYPES: Final = "pollen_types"
+CONF_UPDATE_FREQUENCY: Final = "update_frequency"
 
 PLATFORMS = ["sensor"]
 
