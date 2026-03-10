@@ -23,10 +23,10 @@ pollenvarsel_naaf_yr:
   pollen_types:
     - hazel # Hassel
     - alder # Or
-    - willow # Salix NOTE: id needs verification when pollen season begins
-    - birch # Bjørk NOTE: id needs verification when pollen season begins
-    - grass # Gress NOTE: id needs verification when pollen season begins
-    - mugwort # Burot NOTE: id needs verification when pollen season begins
+    - willow # Salix ℹ️: id needs verification when pollen season begins
+    - birch # Bjørk ℹ️: id needs verification when pollen season begins
+    - grass # Gress ℹ️: id needs verification when pollen season begins
+    - mugwort # Burot ℹ️: id needs verification when pollen season begins
   locations:
     - location_id: "1-189277"
       location_name: "Molde" # Optional
@@ -43,6 +43,8 @@ pollenvarsel_naaf_yr:
 - **locations** (required): List of locations to monitor
   - **location_id** (required): YR location ID (found in the API URL)
   - **location_name** (optional): Your custom name for the location
+
+  >  ℹ️: Only locations in mainland Norway will work.
 
 - **language** (optional): Language for pollen type names and distribution levels. Default: `nb`
   - `nb` - Norwegian bokmål

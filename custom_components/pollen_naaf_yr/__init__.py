@@ -16,6 +16,9 @@ CONF_POLLEN_TYPES: Final = "pollen_types"
 CONF_UPDATE_FREQUENCY: Final = "update_frequency"
 CONF_LANGUAGE: Final = "language"
 
+VALID_POLLEN_TYPES: Final = {"hazel", "alder", "willow", "birch", "grass", "mugwort"}
+VALID_LANGUAGES: Final = {"nb", "nn", "sme", "en"}
+
 PLATFORMS = ["sensor"]
 
 
@@ -26,8 +29,30 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
 
     hass.data.setdefault(DOMAIN, {})
     
-    # Parse config and store
     pollen_config = config[DOMAIN]
+
+    # Validate pollen types
+    pollen_types = pollen_config.get(CONF_POLLEN_TYPES, [])
+    invalid_types = [t for t in pollen_types if t not in VALID_POLLEN_TYPES]
+    if invalid_types:
+        _LOGGER.error(
+            "Invalid pollen type(s): %s. Valid types are: %s",
+            ", ".join(invalid_types),
+            ", ".join(sorted(VALID_POLLEN_TYPES)),
+        )
+        return False
+
+    # Validate language
+    language = pollen_config.get(CONF_LANGUAGE, "nb")
+    if language not in VALID_LANGUAGES:
+        _LOGGER.warning(
+            "Invalid language '%s'. Valid languages are: %s. Falling back to 'nb'",
+            language,
+            ", ".join(sorted(VALID_LANGUAGES)),
+        )
+        pollen_config[CONF_LANGUAGE] = "nb"
+
+    # Store config and forward setup
     hass.data[DOMAIN]["config"] = pollen_config
     
     # Forward setup to sensor platform
