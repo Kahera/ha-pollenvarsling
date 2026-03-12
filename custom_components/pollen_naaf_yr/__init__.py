@@ -66,7 +66,9 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up NAAF/Yr Pollen from config entry."""
     hass.data.setdefault(DOMAIN, {})
-    hass.data[DOMAIN][entry.entry_id] = entry.data
+    hass.data[DOMAIN].setdefault(entry.entry_id, {})
+    hass.data[DOMAIN][entry.entry_id]["config"] = entry.data
+    hass.data[DOMAIN][entry.entry_id].setdefault("coordinators", {})
     
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True

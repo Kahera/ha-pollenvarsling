@@ -1,5 +1,6 @@
 """NAAF Pollen Forecast Sensors."""
 import logging
+from datetime import timedelta
 from typing import Any
 
 from homeassistant.components.sensor import SensorEntity
@@ -39,15 +40,27 @@ async def async_setup_entry(
     update_frequency = config_data.get(CONF_UPDATE_FREQUENCY, DEFAULT_UPDATE_FREQUENCY)
     language = config_data.get(CONF_LANGUAGE, DEFAULT_LANGUAGE)
 
+    # Get or create coordinators storage
+    hass.data.setdefault(DOMAIN, {})
+    hass.data[DOMAIN].setdefault(entry.entry_id, {})
+    coordinators = hass.data[DOMAIN][entry.entry_id].setdefault("coordinators", {})
+
     entities = []
 
     for location in locations:
         location_id = location.get(CONF_LOCATION_ID)
         custom_location_name = location.get(CONF_LOCATION_NAME)
 
-        # Create coordinator for this location
-        coordinator = PollenDataCoordinator(hass, location_id, language, update_frequency)
-        await coordinator.async_config_entry_first_refresh()
+        # Reuse existing coordinator or create a new one
+        if location_id not in coordinators:
+            coordinator = PollenDataCoordinator(hass, location_id, language, update_frequency)
+            await coordinator.async_config_entry_first_refresh()
+            coordinators[location_id] = coordinator
+        else:
+            coordinator = coordinators[location_id]
+            # Update coordinator settings if they changed
+            coordinator.language = language
+            coordinator.update_interval = timedelta(hours=update_frequency)
 
         # Display name is custom name or region name from API
         display_name = custom_location_name or coordinator.region_name
@@ -73,7 +86,7 @@ async def async_setup_entry(
                 )
                 entities.append(sensor)
 
-    async_add_entities(entities)
+    async_add_entities(entities, update_existing=True)
 
 
 class PollenSensor(CoordinatorEntity, SensorEntity):
