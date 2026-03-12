@@ -61,6 +61,7 @@ async def async_setup_entry(
             for day in ["today", "tomorrow"]:
                 entity = PollenSensor(
                     coordinator=coordinator,
+                    entry_id=entry.entry_id,
                     location_id=location_id,
                     custom_location_name=custom_location_name,
                     pollen_type=pollen_type,
@@ -80,6 +81,7 @@ class PollenSensor(CoordinatorEntity, SensorEntity):
     def __init__(
         self,
         coordinator,
+        entry_id: str,
         location_id: str,
         custom_location_name: str | None,
         pollen_type: str,
@@ -99,7 +101,7 @@ class PollenSensor(CoordinatorEntity, SensorEntity):
         self._display_name = custom_location_name or region_name
 
         self._attr_unique_id = (
-            f"{DOMAIN}_{location_id}_{pollen_type.lower()}_{day}"
+            f"{entry_id}_{location_id}_{pollen_type.lower()}_{day}"
         )
         self._attr_device_info = device_info
         self._attr_icon = self._get_icon()
