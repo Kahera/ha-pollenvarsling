@@ -1,7 +1,9 @@
 """NAAF Pollen Forecast Integration."""
-import logging
+from __future__ import annotations
 
-from homeassistant.config_entries import ConfigEntry
+import logging
+from typing import TYPE_CHECKING
+
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.typing import ConfigType
 
@@ -12,6 +14,11 @@ from .const import (
     VALID_LANGUAGES,
     VALID_POLLEN_TYPES,
 )
+from .coordinator import PollenDataCoordinator
+from .data import PollenVarselConfigEntry
+
+if TYPE_CHECKING:
+    pass
 
 _LOGGER: logging.Logger = logging.getLogger(__name__)
 
@@ -23,8 +30,6 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     if DOMAIN not in config:
         return True
 
-    hass.data.setdefault(DOMAIN, {})
-    
     pollen_config = config[DOMAIN]
 
     # Validate pollen types
@@ -48,9 +53,6 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
         )
         pollen_config[CONF_LANGUAGE] = "nb"
 
-    # Store config and forward setup
-    hass.data[DOMAIN]["config"] = pollen_config
-    
     # Forward setup to sensor platform
     hass.async_create_task(
         hass.config_entries.flow.async_init(
@@ -63,20 +65,38 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     return True
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+async def async_setup_entry(
+    hass: HomeAssistant,
+    entry: PollenVarselConfigEntry,
+) -> bool:
     """Set up NAAF/Yr Pollen from config entry."""
-    hass.data.setdefault(DOMAIN, {})
-    hass.data[DOMAIN].setdefault(entry.entry_id, {})
-    hass.data[DOMAIN][entry.entry_id]["config"] = entry.data
-    hass.data[DOMAIN][entry.entry_id].setdefault("coordinators", {})
+    config_data = entry.data
+    
+    # Extract configuration
+    from .const import DEFAULT_LANGUAGE, DEFAULT_UPDATE_FREQUENCY
+    
+    update_frequency = config_data.get("update_frequency", DEFAULT_UPDATE_FREQUENCY)
+    language = config_data.get(CONF_LANGUAGE, DEFAULT_LANGUAGE)
+    
+    # Create coordinator
+    coordinator = PollenDataCoordinator(
+        hass=hass,
+        language=language,
+        update_frequency=update_frequency,
+    )
+    
+    await coordinator.async_config_entry_first_refresh()
+    
+    entry.runtime_data = coordinator
     
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True
 
 
-async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+async def async_unload_entry(
+    hass: HomeAssistant,
+    entry: PollenVarselConfigEntry,
+) -> bool:
     """Unload config entry."""
-    if await hass.config_entries.async_unload_platforms(entry, PLATFORMS):
-        hass.data[DOMAIN].pop(entry.entry_id, None)
-        return True
-    return False
+    return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+
