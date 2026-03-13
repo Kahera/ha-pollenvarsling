@@ -46,20 +46,23 @@ class PollenDataCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self._load_translations()
 
     def _load_translations(self) -> None:
-        """Load translations from language file."""
-        translations_dir = Path(__file__).parent / "translations"
-        lang_file = translations_dir / f"{self.language}.json"
-        
-        # Fall back to English if language file doesn't exist
-        if not lang_file.exists():
-            lang_file = translations_dir / "en.json"
-        
-        try:
-            with open(lang_file, encoding="utf-8") as f:
-                self._translations = json.load(f)
-        except Exception as err:
-            _LOGGER.warning("Failed to load translations for %s: %s", self.language, err)
-            self._translations = {}
+        """Load translations from language files."""
+        component_dir = Path(__file__).parent
+
+        def _load_json(path: Path) -> dict[str, Any]:
+            try:
+                with open(path, encoding="utf-8") as f:
+                    return json.load(f)
+            except Exception as err:
+                _LOGGER.warning("Failed to load translation file %s: %s", path, err)
+                return {}
+
+        def _resolve(directory: Path) -> Path:
+            candidate = directory / f"{self.language}.json"
+            return candidate if candidate.exists() else directory / "en.json"
+
+        self._translations = _load_json(_resolve(component_dir / "translations"))
+        self._translations.update(_load_json(_resolve(component_dir / "locale")))
 
     @property
     def location_data(self) -> dict[str, dict[str, Any]]:

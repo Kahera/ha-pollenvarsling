@@ -1,0 +1,10 @@
+{
+  "general": {
+    "today": "I dag",
+    "tomorrow": "I morgon",
+    "pollen": "Pollen"
+  },
+  "entry": {
+    "title": "Pollenvarsel"
+  }
+}

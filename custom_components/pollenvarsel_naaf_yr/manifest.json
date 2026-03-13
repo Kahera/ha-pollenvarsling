@@ -1,5 +1,4 @@
 {
-  "manifest_version": 1,
   "domain": "pollenvarsel_naaf_yr",
   "name": "NAAF/Yr Pollen Forecast",
   "codeowners": ["@kahera"],

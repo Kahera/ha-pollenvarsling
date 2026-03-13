@@ -1,0 +1,10 @@
+{
+  "general": {
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "pollen": "Pollen"
+  },
+  "entry": {
+    "title": "Pollen Forecast"
+  }
+}

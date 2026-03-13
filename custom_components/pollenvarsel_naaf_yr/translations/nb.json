@@ -45,13 +45,5 @@
         "en": "Engelsk"
       }
     }
-  },
-  "general": {
-    "today": "I dag",
-    "tomorrow": "I morgen",
-    "pollen": "Pollen"
-  },
-  "entry": {
-    "title": "Pollenvarsel"
   }
 }
