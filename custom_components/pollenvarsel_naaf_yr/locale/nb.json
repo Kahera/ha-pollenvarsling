@@ -4,6 +4,13 @@
     "tomorrow": "I morgen",
     "pollen": "Pollen"
   },
+  "levels": {
+    "none": "Ingen",
+    "low": "Beskjeden",
+    "moderate": "Moderat",
+    "high": "Høy",
+    "extreme": "Ekstrem"
+  },
   "entry": {
     "title": "Pollenvarsel"
   }

@@ -156,8 +156,13 @@ class PollenSensor(CoordinatorEntity, SensorEntity):
             "region_name": location_data.get("region_name"),
             "last_updated": location_data.get("last_updated"),
         }
-        if pollen_data.get("level_name"):
-            attrs["level_name"] = pollen_data.get("level_name")
+        level_name = pollen_data.get("level_name")
+        if not level_name:
+            level = pollen_data.get("level") or "none"
+            levels_translations = self.coordinator.translations.get("levels", {})
+            level_key = str(level).lower()
+            level_name = levels_translations.get(level_key) or str(level)
+        attrs["level_name"] = level_name
         if self.custom_location_name:
             attrs["location_name"] = self.custom_location_name
         return attrs

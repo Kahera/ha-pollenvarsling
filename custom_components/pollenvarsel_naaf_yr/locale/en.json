@@ -4,6 +4,13 @@
     "tomorrow": "Tomorrow",
     "pollen": "Pollen"
   },
+  "levels": {
+    "none": "Not forecast",
+    "low": "Low",
+    "moderate": "Moderate",
+    "high": "High",
+    "extreme": "Extreme"
+  },
   "entry": {
     "title": "Pollen Forecast"
   }
