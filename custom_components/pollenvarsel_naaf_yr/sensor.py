@@ -128,7 +128,7 @@ class PollenSensor(CoordinatorEntity, SensorEntity):
         icons = {
             "hazel": "mdi:tree",
             "alder": "mdi:tree",
-            "willow": "mdi:tree",
+            "salix": "mdi:tree",
             "birch": "mdi:tree",
             "grass": "mdi:grass",
             "mugwort": "mdi:flower",

@@ -12,7 +12,7 @@ CONF_UPDATE_FREQUENCY: Final = "update_frequency"
 CONF_LANGUAGE: Final = "language"
 
 # Valid values
-VALID_POLLEN_TYPES: Final = {"hazel", "alder", "willow", "birch", "grass", "mugwort"}
+VALID_POLLEN_TYPES: Final = {"hazel", "alder", "salix", "birch", "grass", "mugwort"}
 VALID_LANGUAGES: Final = {"nb", "nn", "en"}
 
 # Defaults

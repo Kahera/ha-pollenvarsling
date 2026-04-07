@@ -34,7 +34,7 @@ Configuration is done through the Home Assistant UI — no `configuration.yaml` 
 - **Pollen Types** (required): Select which pollen types to create sensors for. Available types:
   - Hazel (Hassel)
   - Alder (Or)
-  - Willow (Salix)
+  - Salix (Salix)
   - Birch (Bjørk)
   - Grass (Gress)
   - Mugwort (Burot)
