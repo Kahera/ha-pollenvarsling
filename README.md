@@ -70,7 +70,7 @@ For each pollen type and location, the integration creates two sensors:
 - `none` - Pollen type not forecast for that day
 - `low` - Low pollen level
 - `moderate` - Moderate pollen level
-- `high` - High pollen level
+- `severe` - Severe pollen level
 - `extreme` - Extreme pollen level
 > ℹ️ The integration was set up before anything was highly in bloom - these values need to be verified as the season progresses.  
 
@@ -90,7 +90,7 @@ automation:
     trigger:
       - platform: state
         entity_id: sensor.pollen_birch_molde_today
-        to: "high"
+        to: "severe"
       - platform: state
         entity_id: sensor.pollen_birch_molde_today
         to: "extreme"

@@ -8,7 +8,7 @@
     "none": "Not forecast",
     "low": "Low",
     "moderate": "Moderate",
-    "high": "High",
+    "severe": "Severe",
     "extreme": "Extreme"
   },
   "entry": {
