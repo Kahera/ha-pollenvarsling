@@ -7,7 +7,7 @@ A custom Home Assistant integration for displaying Norwegian pollen forecasts fr
 ### Via HACS (Recommended)
 1. Go to HACS > Integrations
 2. Click the menu (⋮) and select "Custom repositories"
-3. Add `https://github.com/kahera/pollenvarsling` as a Custom Repository
+3. Add `https://github.com/Kahera/HA_pollen_forecast` as a Custom Repository
 4. Select the category "Integration"
 5. Find "NAAF/Yr Pollen Forecast" and install
 

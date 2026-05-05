@@ -8,6 +8,7 @@ import aiohttp
 import voluptuous as vol
 from homeassistant.config_entries import ConfigFlow, ConfigFlowResult
 from homeassistant.helpers import selector
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .const import (
     BASE_URL,
@@ -148,13 +149,13 @@ class PollenvarselConfigFlow(ConfigFlow, domain=DOMAIN):
         """Fetch region name from API."""
         try:
             url = f"{BASE_URL}/{location_id}/pollen?language={language}"
-            async with aiohttp.ClientSession() as session:
-                async with session.get(url, timeout=aiohttp.ClientTimeout(total=10)) as resp:
-                    if resp.status == 200:
-                        data = await resp.json()
-                        region_name = data.get("_embedded", {}).get("regionName")
-                        if region_name:
-                            return region_name
+            session = async_get_clientsession(self.hass)
+            async with session.get(url, timeout=aiohttp.ClientTimeout(total=10)) as resp:
+                if resp.status == 200:
+                    data = await resp.json()
+                    region_name = data.get("_embedded", {}).get("regionName")
+                    if region_name:
+                        return region_name
         except Exception as err:
             _LOGGER.debug("Error fetching region name: %s", err)
         return ""
