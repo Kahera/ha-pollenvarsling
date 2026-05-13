@@ -48,26 +48,7 @@
   },
   "entity": {
     "sensor": {
-      "pollen_today": {
-        "name": "{pollen_type} today",
-        "state": {
-          "none": "None",
-          "low": "Low",
-          "moderate": "Moderate",
-          "high": "High",
-          "extreme": "Extreme"
-        }
-      },
-      "pollen_tomorrow": {
-        "name": "{pollen_type} tomorrow",
-        "state": {
-          "none": "[%key:component::pollenvarsel_naaf_yr::entity::sensor::pollen_today::state::none%]",
-          "low": "[%key:component::pollenvarsel_naaf_yr::entity::sensor::pollen_today::state::low%]",
-          "moderate": "[%key:component::pollenvarsel_naaf_yr::entity::sensor::pollen_today::state::moderate%]",
-          "high": "[%key:component::pollenvarsel_naaf_yr::entity::sensor::pollen_today::state::high%]",
-          "extreme": "[%key:component::pollenvarsel_naaf_yr::entity::sensor::pollen_today::state::extreme%]"
-        }
-      }
+      "pollen_forecast": { "name": "{pollen_name} {day_name}" }
     }
   }
 }

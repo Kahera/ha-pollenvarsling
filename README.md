@@ -103,3 +103,7 @@ If sensors don't appear:
 1. Restart Home Assistant after installing the integration
 2. Check that the location ID is correct (see [Finding Location IDs](#finding-location-ids))
 3. Check Home Assistant logs for errors
+
+### Changing configuration
+
+The integration does not currently support editing settings after setup. To change pollen types, language, or update frequency, delete the integration entry under **Settings > Devices & Services** and re-add it.

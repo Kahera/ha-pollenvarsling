@@ -8,8 +8,9 @@ from typing import TYPE_CHECKING, Any
 import aiohttp
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from homeassistant.util import dt as dt_util
 
-from .const import BASE_URL, CONF_LOCATION_ID, CONF_LOCATIONS, DEFAULT_LANGUAGE, DEFAULT_UPDATE_FREQUENCY
+from .const import BASE_URL, CONF_LOCATION_ID, CONF_LOCATIONS, DAY_NAMES, DEFAULT_LANGUAGE, DEFAULT_UPDATE_FREQUENCY, LEVEL_NAMES, POLLEN_NAMES
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -40,7 +41,6 @@ class PollenDataCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.language = language
         self._update_frequency = update_frequency
         self._location_data: dict[str, dict[str, Any]] = {}
-        self._pollen_names: dict[str, str] = {}
 
     @property
     def location_data(self) -> dict[str, dict[str, Any]]:
@@ -49,8 +49,18 @@ class PollenDataCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
     @property
     def pollen_names(self) -> dict[str, str]:
-        """Get pollen names mapping."""
-        return self._pollen_names
+        """Get localized pollen type names."""
+        return POLLEN_NAMES.get(self.language, POLLEN_NAMES["en"])
+
+    @property
+    def day_names(self) -> dict[str, str]:
+        """Get localized day names."""
+        return DAY_NAMES.get(self.language, DAY_NAMES["en"])
+
+    @property
+    def level_names(self) -> dict[str, str]:
+        """Get localized level names."""
+        return LEVEL_NAMES.get(self.language, LEVEL_NAMES["en"])
 
     async def _async_update_data(self) -> dict[str, Any]:
         """Fetch pollen data from NAAF API for all locations."""
@@ -76,11 +86,13 @@ class PollenDataCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                     # Parse the response
                     forecast = embedded.get("pollenForecast", [])
                     parsed_data = {"today": {}, "tomorrow": {}}
+                    dates: dict[str, str | None] = {}
 
                     for day_idx, day_forecast in enumerate(forecast[:2]):
                         day_key = "today" if day_idx == 0 else "tomorrow"
                         distributions = day_forecast.get("distributions", {})
                         date = day_forecast.get("date")
+                        dates[day_key] = date
 
                         # Flatten the distribution structure
                         for level, level_data in distributions.items():
@@ -96,13 +108,12 @@ class PollenDataCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                                             "pollen_name": pollen_name,
                                             "date": date,
                                         }
-                                        if pollen_name:
-                                            self._pollen_names[pollen_id] = pollen_name
 
                     self._location_data[location_id] = {
                         "region_name": region_name,
                         "data": parsed_data,
-                        "last_updated": __import__("datetime").datetime.now().isoformat(),
+                        "dates": dates,
+                        "last_updated": dt_util.now().isoformat(),
                     }
                 except Exception as err:
                     _LOGGER.warning(
@@ -110,12 +121,8 @@ class PollenDataCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                         location_id,
                         err,
                     )
-                    raise UpdateFailed(f"Error fetching pollen data: {err}") from err
 
             return {"locations": self._location_data}
 
-        except UpdateFailed as err:
-            raise err
         except Exception as err:
             raise UpdateFailed(f"Error fetching pollen data: {err}") from err
-
