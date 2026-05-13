@@ -38,21 +38,6 @@
         "mugwort": "Mugwort"
       }
     },
-    "day": {
-      "options": {
-        "today": "today",
-        "tomorrow": "tomorrow"
-      }
-    },
-    "level": {
-      "options": {
-        "none": "None",
-        "low": "Low",
-        "medium": "Medium",
-        "severe": "Severe",
-        "extreme": "Extreme"
-      }
-    },
     "language": {
       "options": {
         "nb": "Norwegian (Bokmål)",

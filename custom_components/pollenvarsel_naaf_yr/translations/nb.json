@@ -38,21 +38,6 @@
         "mugwort": "Burot"
       }
     },
-    "day": {
-      "options": {
-        "today": "i dag",
-        "tomorrow": "i morgen"
-      }
-    },
-    "level": {
-      "options": {
-        "none": "Ingen",
-        "low": "Lav",
-        "medium": "Moderat",
-        "severe": "Høy",
-        "extreme": "Ekstremt"
-      }
-    },
     "language": {
       "options": {
         "nb": "Norsk (Bokmål)",

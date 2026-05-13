@@ -7,10 +7,9 @@ from typing import TYPE_CHECKING, Any
 
 import aiohttp
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers.translation import async_get_translations
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import BASE_URL, CONF_LOCATION_ID, CONF_LOCATIONS, DEFAULT_LANGUAGE, DEFAULT_UPDATE_FREQUENCY
+from .const import BASE_URL, CONF_LOCATION_ID, CONF_LOCATIONS, DAY_NAMES, DEFAULT_LANGUAGE, DEFAULT_UPDATE_FREQUENCY, LEVEL_NAMES, POLLEN_NAMES
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -41,9 +40,6 @@ class PollenDataCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.language = language
         self._update_frequency = update_frequency
         self._location_data: dict[str, dict[str, Any]] = {}
-        self._pollen_names: dict[str, str] = {}
-        self._day_names: dict[str, str] = {}
-        self._level_names: dict[str, str] = {}
 
     @property
     def location_data(self) -> dict[str, dict[str, Any]]:
@@ -53,17 +49,17 @@ class PollenDataCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     @property
     def pollen_names(self) -> dict[str, str]:
         """Get localized pollen type names."""
-        return self._pollen_names
+        return POLLEN_NAMES.get(self.language, POLLEN_NAMES["en"])
 
     @property
     def day_names(self) -> dict[str, str]:
         """Get localized day names."""
-        return self._day_names
+        return DAY_NAMES.get(self.language, DAY_NAMES["en"])
 
     @property
     def level_names(self) -> dict[str, str]:
         """Get localized level names."""
-        return self._level_names
+        return LEVEL_NAMES.get(self.language, LEVEL_NAMES["en"])
 
     async def _async_update_data(self) -> dict[str, Any]:
         """Fetch pollen data from NAAF API for all locations."""
@@ -71,26 +67,6 @@ class PollenDataCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             locations = self.config_entry.data.get(CONF_LOCATIONS, [])
             
             self._location_data = {}
-            selector_strings = await async_get_translations(
-                self.hass, self.language, "selector",
-                integrations={"pollenvarsel_naaf_yr"},
-            )
-            prefix = "component.pollenvarsel_naaf_yr.selector"
-            self._pollen_names = {
-                k.rsplit(".", 1)[-1]: v
-                for k, v in selector_strings.items()
-                if k.startswith(f"{prefix}.pollen_type.options.")
-            }
-            self._day_names = {
-                k.rsplit(".", 1)[-1]: v
-                for k, v in selector_strings.items()
-                if k.startswith(f"{prefix}.day.options.")
-            }
-            self._level_names = {
-                k.rsplit(".", 1)[-1]: v
-                for k, v in selector_strings.items()
-                if k.startswith(f"{prefix}.level.options.")
-            }
             session = async_get_clientsession(self.hass)
 
             for location in locations:
