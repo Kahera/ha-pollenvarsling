@@ -107,7 +107,6 @@ class PollenSensor(CoordinatorEntity, SensorEntity):
         self._attr_translation_key = f"pollen_{day}"
         self.entity_id = f"sensor.pollen_{pollen_type}_{slugify(self._display_name)}_{day}"
         self._attr_device_info = device_info
-        self._attr_icon = self._get_icon()
 
     @property
     def translation_placeholders(self) -> dict[str, str]:
