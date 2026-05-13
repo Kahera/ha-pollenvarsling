@@ -35,7 +35,7 @@ DAY_NAMES: Final[dict[str, dict[str, str]]] = {
 }
 
 LEVEL_NAMES: Final[dict[str, dict[str, str]]] = {
-    "nb": {"none": "Ingen", "low": "Beskjeden", "medium": "Moderat", "severe": "Kraftig", "extreme": "Ekstrem"},
-    "nn": {"none": "Ingen", "low": "Beskjeden", "medium": "Moderat", "severe": "Kraftig", "extreme": "Ekstrem"},
-    "en": {"none": "None", "low": "Low", "medium": "Medium", "severe": "Severe", "extreme": "Extreme"},
+    "nb": {"none": "Ingen", "low": "Beskjeden", "moderate": "Moderat", "severe": "Kraftig", "extreme": "Ekstrem"},
+    "nn": {"none": "Ingen", "low": "Beskjeden", "moderate": "Moderat", "severe": "Kraftig", "extreme": "Ekstrem"},
+    "en": {"none": "None", "low": "Low", "moderate": "Moderate", "severe": "Severe", "extreme": "Extreme"},
 }

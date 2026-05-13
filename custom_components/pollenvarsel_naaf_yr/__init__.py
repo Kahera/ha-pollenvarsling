@@ -6,7 +6,7 @@ import logging
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import config_validation as cv
 
-from .const import CONF_LANGUAGE, DEFAULT_LANGUAGE, DEFAULT_UPDATE_FREQUENCY, DOMAIN
+from .const import CONF_LANGUAGE, CONF_UPDATE_FREQUENCY, DEFAULT_LANGUAGE, DEFAULT_UPDATE_FREQUENCY, DOMAIN
 from .coordinator import PollenDataCoordinator
 from .data import PollenVarselConfigEntry
 
@@ -25,7 +25,7 @@ async def async_setup_entry(
     config_data = entry.data
     
     # Extract configuration
-    update_frequency = config_data.get("update_frequency", DEFAULT_UPDATE_FREQUENCY)
+    update_frequency = config_data.get(CONF_UPDATE_FREQUENCY, DEFAULT_UPDATE_FREQUENCY)
     language = config_data.get(CONF_LANGUAGE, DEFAULT_LANGUAGE)
     
     # Create coordinator

@@ -2,12 +2,13 @@
 from __future__ import annotations
 
 import logging
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
 import aiohttp
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from homeassistant.util import dt as dt_util
 
 from .const import BASE_URL, CONF_LOCATION_ID, CONF_LOCATIONS, DAY_NAMES, DEFAULT_LANGUAGE, DEFAULT_UPDATE_FREQUENCY, LEVEL_NAMES, POLLEN_NAMES
 
@@ -112,7 +113,7 @@ class PollenDataCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                         "region_name": region_name,
                         "data": parsed_data,
                         "dates": dates,
-                        "last_updated": datetime.now().isoformat(),
+                        "last_updated": dt_util.now().isoformat(),
                     }
                 except Exception as err:
                     _LOGGER.warning(
@@ -120,12 +121,8 @@ class PollenDataCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                         location_id,
                         err,
                     )
-                    raise UpdateFailed(f"Error fetching pollen data: {err}") from err
 
             return {"locations": self._location_data}
 
-        except UpdateFailed as err:
-            raise err
         except Exception as err:
             raise UpdateFailed(f"Error fetching pollen data: {err}") from err
-

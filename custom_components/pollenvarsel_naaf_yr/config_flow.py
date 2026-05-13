@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 import aiohttp
 import voluptuous as vol
@@ -23,9 +23,6 @@ from .const import (
     DOMAIN,
     VALID_POLLEN_TYPES,
 )
-
-if TYPE_CHECKING:
-    pass
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -135,14 +132,3 @@ class PollenvarselConfigFlow(ConfigFlow, domain=DOMAIN):
         except Exception as err:
             _LOGGER.debug("Error fetching region name: %s", err)
         return ""
-
-    async def async_step_import(self, import_data: dict[str, Any]) -> ConfigFlowResult:
-        """Handle import from YAML configuration."""
-        # Check if entry with similar data already exists
-        await self.async_set_unique_id(f"{DOMAIN}_yaml_import")
-        self._abort_if_unique_id_configured()
-        
-        return self.async_create_entry(
-            title="NAAF/Yr Pollen Forecast (Imported from YAML)",
-            data=import_data,
-        )
