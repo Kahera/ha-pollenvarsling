@@ -113,7 +113,7 @@ class PollenSensor(CoordinatorEntity, SensorEntity):
     def translation_placeholders(self) -> dict[str, str]:
         """Return translation placeholders for entity name."""
         pollen_name = (
-            self.coordinator.pollen_names.get(self.pollen_type)h
+            self.coordinator.pollen_names.get(self.pollen_type)
             or self.pollen_type.capitalize()
         )
         return {"pollen_type": pollen_name}

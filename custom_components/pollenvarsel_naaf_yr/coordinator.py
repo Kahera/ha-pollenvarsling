@@ -2,12 +2,14 @@
 from __future__ import annotations
 
 import logging
+from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
+import aiohttp
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import DEFAULT_LANGUAGE, DEFAULT_UPDATE_FREQUENCY
+from .const import BASE_URL, CONF_LOCATION_ID, CONF_LOCATIONS, DEFAULT_LANGUAGE, DEFAULT_UPDATE_FREQUENCY
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -29,8 +31,6 @@ class PollenDataCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         update_frequency: int = DEFAULT_UPDATE_FREQUENCY,
     ) -> None:
         """Initialize coordinator."""
-        from datetime import timedelta
-        
         super().__init__(
             hass,
             _LOGGER,
@@ -54,9 +54,6 @@ class PollenDataCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
     async def _async_update_data(self) -> dict[str, Any]:
         """Fetch pollen data from NAAF API for all locations."""
-        import aiohttp
-        from .const import CONF_LOCATION_ID, CONF_LOCATIONS, BASE_URL
-
         try:
             locations = self.config_entry.data.get(CONF_LOCATIONS, [])
             
