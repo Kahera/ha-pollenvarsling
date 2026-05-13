@@ -104,18 +104,19 @@ class PollenSensor(CoordinatorEntity, SensorEntity):
         self._attr_unique_id = (
             f"{entry_id}_{location_id}_{pollen_type.lower()}_{day}"
         )
-        self._attr_translation_key = f"pollen_{day}"
+        self._attr_translation_key = "pollen_forecast"
         self.entity_id = f"sensor.pollen_{pollen_type}_{slugify(self._display_name)}_{day}"
         self._attr_device_info = device_info
 
     @property
     def translation_placeholders(self) -> dict[str, str]:
         """Return translation placeholders for entity name."""
-        pollen_name = (
-            self.coordinator.pollen_names.get(self.pollen_type)
-            or self.pollen_type.capitalize()
-        )
-        return {"pollen_type": pollen_name}
+        return {
+            "pollen_name": self.coordinator.pollen_names.get(
+                self.pollen_type.lower(), self.pollen_type.capitalize()
+            ),
+            "day_name": self.coordinator.day_names.get(self.day, self.day),
+        }
 
     @property
     def icon(self) -> str:
@@ -146,12 +147,13 @@ class PollenSensor(CoordinatorEntity, SensorEntity):
         pollen_data = day_data.get(self.pollen_type, {})
 
         attrs: dict[str, Any] = {
-            "date": pollen_data.get("date"),
-            "pollen_name": pollen_data.get("pollen_name"),
+            "date": pollen_data.get("date") or location_data.get("dates", {}).get(self.day),
+            "pollen_name": pollen_data.get("pollen_name") or self.coordinator.pollen_names.get(self.pollen_type.lower(), self.pollen_type.capitalize()),
             "region_name": location_data.get("region_name"),
             "last_updated": location_data.get("last_updated"),
         }
-        level_name = pollen_data.get("level_name") or pollen_data.get("level") or "none"
+        level = pollen_data.get("level", "none")
+        level_name = pollen_data.get("level_name") or self.coordinator.level_names.get(level, level)
         attrs["level_name"] = level_name
         if self.custom_location_name:
             attrs["location_name"] = self.custom_location_name

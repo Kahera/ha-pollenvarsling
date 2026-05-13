@@ -2,11 +2,12 @@
 from __future__ import annotations
 
 import logging
-from datetime import timedelta
+from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Any
 
 import aiohttp
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.translation import async_get_translations
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import BASE_URL, CONF_LOCATION_ID, CONF_LOCATIONS, DEFAULT_LANGUAGE, DEFAULT_UPDATE_FREQUENCY
@@ -41,6 +42,8 @@ class PollenDataCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self._update_frequency = update_frequency
         self._location_data: dict[str, dict[str, Any]] = {}
         self._pollen_names: dict[str, str] = {}
+        self._day_names: dict[str, str] = {}
+        self._level_names: dict[str, str] = {}
 
     @property
     def location_data(self) -> dict[str, dict[str, Any]]:
@@ -49,8 +52,18 @@ class PollenDataCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
     @property
     def pollen_names(self) -> dict[str, str]:
-        """Get pollen names mapping."""
+        """Get localized pollen type names."""
         return self._pollen_names
+
+    @property
+    def day_names(self) -> dict[str, str]:
+        """Get localized day names."""
+        return self._day_names
+
+    @property
+    def level_names(self) -> dict[str, str]:
+        """Get localized level names."""
+        return self._level_names
 
     async def _async_update_data(self) -> dict[str, Any]:
         """Fetch pollen data from NAAF API for all locations."""
@@ -58,6 +71,26 @@ class PollenDataCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             locations = self.config_entry.data.get(CONF_LOCATIONS, [])
             
             self._location_data = {}
+            selector_strings = await async_get_translations(
+                self.hass, self.language, "selector",
+                integrations={"pollenvarsel_naaf_yr"},
+            )
+            prefix = "component.pollenvarsel_naaf_yr.selector"
+            self._pollen_names = {
+                k.rsplit(".", 1)[-1]: v
+                for k, v in selector_strings.items()
+                if k.startswith(f"{prefix}.pollen_type.options.")
+            }
+            self._day_names = {
+                k.rsplit(".", 1)[-1]: v
+                for k, v in selector_strings.items()
+                if k.startswith(f"{prefix}.day.options.")
+            }
+            self._level_names = {
+                k.rsplit(".", 1)[-1]: v
+                for k, v in selector_strings.items()
+                if k.startswith(f"{prefix}.level.options.")
+            }
             session = async_get_clientsession(self.hass)
 
             for location in locations:
@@ -76,11 +109,13 @@ class PollenDataCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                     # Parse the response
                     forecast = embedded.get("pollenForecast", [])
                     parsed_data = {"today": {}, "tomorrow": {}}
+                    dates: dict[str, str | None] = {}
 
                     for day_idx, day_forecast in enumerate(forecast[:2]):
                         day_key = "today" if day_idx == 0 else "tomorrow"
                         distributions = day_forecast.get("distributions", {})
                         date = day_forecast.get("date")
+                        dates[day_key] = date
 
                         # Flatten the distribution structure
                         for level, level_data in distributions.items():
@@ -96,13 +131,12 @@ class PollenDataCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                                             "pollen_name": pollen_name,
                                             "date": date,
                                         }
-                                        if pollen_name:
-                                            self._pollen_names[pollen_id] = pollen_name
 
                     self._location_data[location_id] = {
                         "region_name": region_name,
                         "data": parsed_data,
-                        "last_updated": __import__("datetime").datetime.now().isoformat(),
+                        "dates": dates,
+                        "last_updated": datetime.now().isoformat(),
                     }
                 except Exception as err:
                     _LOGGER.warning(

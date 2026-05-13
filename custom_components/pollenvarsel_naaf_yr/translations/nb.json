@@ -38,6 +38,21 @@
         "mugwort": "Burot"
       }
     },
+    "day": {
+      "options": {
+        "today": "i dag",
+        "tomorrow": "i morgen"
+      }
+    },
+    "level": {
+      "options": {
+        "none": "Ingen",
+        "low": "Lav",
+        "medium": "Moderat",
+        "severe": "Høy",
+        "extreme": "Ekstremt"
+      }
+    },
     "language": {
       "options": {
         "nb": "Norsk (Bokmål)",
@@ -48,26 +63,7 @@
   },
   "entity": {
     "sensor": {
-      "pollen_today": {
-        "name": "{pollen_type} i dag",
-        "state": {
-          "none": "Ingen",
-          "low": "Beskjeden",
-          "moderate": "Moderat",
-          "high": "Høy",
-          "extreme": "Ekstrem"
-        }
-      },
-      "pollen_tomorrow": {
-        "name": "{pollen_type} i morgen",
-        "state": {
-          "none": "[%key:component::pollenvarsel_naaf_yr::entity::sensor::pollen_today::state::none%]",
-          "low": "[%key:component::pollenvarsel_naaf_yr::entity::sensor::pollen_today::state::low%]",
-          "moderate": "[%key:component::pollenvarsel_naaf_yr::entity::sensor::pollen_today::state::moderate%]",
-          "high": "[%key:component::pollenvarsel_naaf_yr::entity::sensor::pollen_today::state::high%]",
-          "extreme": "[%key:component::pollenvarsel_naaf_yr::entity::sensor::pollen_today::state::extreme%]"
-        }
-      }
+      "pollen_forecast": { "name": "{pollen_name} {day_name}" }
     }
   }
 }
